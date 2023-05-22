@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#first bash script file I created
 #bash script to automatically login into overthewire server
 
 #File that stores passwords of each level
