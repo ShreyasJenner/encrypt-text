@@ -1,2 +1,3 @@
-# cyber-security
-Contains all codes on concepts and ctfs I practiced
+### Description
+
+Application that encrypts text that is input using cryptographic algorithms
