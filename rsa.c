@@ -1,85 +1,68 @@
-#include <math.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+#include <math.h>
 
-long int isPrime(long int n) {
-    long int i;
-    float rt = sqrt(n);
-    for(i=2;i<=rt;i++) {
-        if(n%i==0)
-            return 0;
-    }
-    return 1;
-}
-
-long int randomNumbers(long int c) {
-    long int a = 32768;
-    long int b = 1048576;
-    for(long int i=a+c;i<b;i++) {
-        if(isPrime(i))
+int findE(int phi) {
+    int i;
+    for(i=1;i<phi;i++) {
+        if(phi%i!=0)
             return i;
     }
     return -1;
 }
 
-long int gcd(long int a, long int b) {
-    if(a==0)
-        return b;
-    return gcd(b%a,a);
-}
+void rsaInit(int *p, int *q, int *d, int *phi, int *n, int *e, int *k) {
+    *p=53, *q = 59;
+    *k = 2;
+    *n = *p * *q;
+    *phi = (*p-1)*(*q-1);
 
-long int find_e(long int lamda_n) {
-    long int i;
-    for(i=3;i<lamda_n;i++) {
-        if(gcd(i,lamda_n)==1) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-//finds value of d and finds gcd
-long int gcdExtended(long int p, long int q, long int *x, long int *y) {
-    if(p==0) {
-        *x = 0;
-        *y = 1;
-        return q;
+    *e = findE(*phi);
+    
+    if(*e==-1) {
+        printf("e not found\n");
     }
 
-    long int x1;
-    long int y1;
-    long int gcd = gcdExtended(q%p, p, &x1, &y1);
+    *d = (*k * *phi + 1)/(*e);
+}
 
-    *x = y1 - (q/p)*x1;
-    *y = x1;
+void encrypt(char *data, int *en,int e,int n) {
+    int i=0;
+    while(*data!='\0') {
+        en[i] = (int)pow(*data,e)%n;
+        printf("%d ",en[i]);
+        data++;
+        i++;
+    }
+    printf("\n");
+}
 
-    return gcd;
+void decrypt(int *en, int d, int n) {
+    int i=0;
+    double val;
+    while(i<5) {
+        val = pow(en[i],d);
+        printf("%f",val);
+        i++;
+    }
+    printf("\n");
 }
 
 int main() {
-    long int p,q,gcdv,lamda_n,n,e=-1,d,temp; 
 
+    int p,q,d,phi,n,e,k;
     
-    while(e==-1) {
-        /*
-        p = randomNumbers(0);
-        q = randomNumbers(p);
-        */
-        p = 61;
-        q = 53;
-        
-        gcdv = gcdExtended(p-1,q-1,&d,&temp);
+    rsaInit(&p,&q,&d,&phi,&n,&e,&k);
+    
+    printf("n=%d\td=%d\te=%d\n",n,d,e);
 
-        n = p*q;
-        lamda_n = ((p-1)*(q-1))/gcdv;
+    char data[30];
+    int en[30];
 
-        e = find_e(lamda_n);
-        printf("p=%ld\nq=%ld\nn=%ld\nlamda_n=%ld\ne=%ld\n",p,q,n,lamda_n,e);
-    }
+    scanf("%s",data);
 
-    printf("d=%ld\n",d);
+    encrypt(&data[0],&en[0],e,n);
+
+    decrypt(&en[0],d,n);
 
     return 0;
 }
